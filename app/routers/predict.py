@@ -25,7 +25,14 @@ def prueba():
 
 @router.post("/predict")
 def predict(pregunta: PreguntaRequest, db: Session = Depends(get_db)):
-    categoria = predecir_categoria(pregunta.pregunta)
+    try:
+        categoria = predecir_categoria(pregunta.pregunta)
+    #Validacion de errores
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error interno al predecir la categoría")
+
+    if not categoria:
+        raise HTTPException(status_code=400, detail="No se pudo clasificar la pregunta")
 
     # Guardar en BD
     nueva_prediccion = models.Prediccion(pregunta=pregunta.pregunta, categoria=categoria)
