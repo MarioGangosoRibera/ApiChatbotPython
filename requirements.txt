@@ -7,3 +7,6 @@ tensorflow
 # Requisitos para testing
 pytest
 httpx
+
+#Requisitos para JWT
+python-jose[cryptography]

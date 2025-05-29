@@ -30,3 +30,4 @@ def test_predict_missing_field():
     payload = {}  # No se envía 'pregunta'
     response = client.post("/predict", json=payload)
     assert response.status_code == 422
+    

@@ -3,6 +3,7 @@ from app.routers import predict
 from app.db.database import Base, engine
 from app.db import models
 import uvicorn
+from app.routers import predict, auth
 
 app = FastAPI(
     title="API de Clasificación de Preguntas",
@@ -20,7 +21,8 @@ async def root():
     return {"message": "API de Clasificación de Preguntas está funcionando"}
 
 
-
+app.include_router(auth.router)
+app.include_router(predict.router)
 
 
 if __name__ == "__main__":
