@@ -9,12 +9,27 @@ from main import app
 
 client = TestClient(app)
 
-def test_predict_success():
-    payload = {
-        "pregunta": "No puedo conectarme a internet"
+# --- FUNCIONES AUXILIARES PARA AUTENTICACIÓN ---
+
+def obtener_token():
+    login_data = {
+        "username": "admin",
+        "password": "admin123"
     }
-    response = client.post("/predict", json=payload)
-    
+    response = client.post("/login", json=login_data)
+    assert response.status_code == 200
+    return response.json()["access_token"]
+
+# Token y headers globales
+token = obtener_token()
+headers = {"Authorization": f"Bearer {token}"}
+
+# --- TESTS ---
+
+def test_predict_success():
+    payload = {"pregunta": "No puedo conectarme a internet"}
+    response = client.post("/predict", json=payload, headers=headers)
+
     assert response.status_code == 200
     data = response.json()
     assert "categoria" in data
@@ -23,11 +38,10 @@ def test_predict_success():
 
 def test_predict_empty():
     payload = {"pregunta": ""}
-    response = client.post("/predict", json=payload)
+    response = client.post("/predict", json=payload, headers=headers)
     assert response.status_code == 422  # Validación de Pydantic
 
 def test_predict_missing_field():
-    payload = {}  # No se envía 'pregunta'
-    response = client.post("/predict", json=payload)
+    payload = {}
+    response = client.post("/predict", json=payload, headers=headers)
     assert response.status_code == 422
-    
